@@ -1,0 +1,23 @@
+{
+  "name": "tiny_app",
+  "version": "1.0.0",
+  "description": "Project 2 for lighthouse",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liujohnson118/tinyApp.git"
+  },
+  "author": "Geyi Liu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/liujohnson118/tinyApp/issues"
+  },
+  "homepage": "https://github.com/liujohnson118/tinyApp#readme",
+  "dependencies": {
+    "ejs": "^2.5.6",
+    "express": "^4.15.3"
+  }
+}
