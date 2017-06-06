@@ -1,31 +1,41 @@
 // server.js
 // load the things we need
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 8080;
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: true}));
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
 // use res.render to load up an ejs view file
 
-// index page
-app.get('/', function(req, res) {
-    var drinks = [
-        { name: 'Bloody Mary', drunkness: 3 },
-        { name: 'Martini', drunkness: 5 },
-        { name: 'Scotch', drunkness: 10 }
-    ];
-    var tagline = "Any code of your own that you haven't looked at for six or more months might as well have been written by someone else.";
+var urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com"
+};
 
-    res.render('pages/index', {
-        drinks: drinks,
-        tagline: tagline
-    });
+app.get("/", (req, res) => {
+  res.end("Hello!");
+});
+
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
+app.get("/hello", (req, res) => {
+  res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 // about page
 app.get('/about', function(req, res) {
     res.render('pages/about');
+});
+
+app.get("/urls", (req, res) => {
+  let templateVars = { urls: urlDatabase };
+  res.render("pages/urls_index", templateVars);
 });
 
 app.listen(8080);
