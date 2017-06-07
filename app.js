@@ -89,7 +89,7 @@ app.post("/urls/:id/delete",(req,res)=>{
 app.post("/urls/:id",(req,res)=>{
   urlDatabase[req.params.id]=req.body.longURL;
   res.redirect("/urls/"+req.params.id);
-})
+});
 
 app.listen(8080);
 console.log('Port 8080 is working');

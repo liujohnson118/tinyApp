@@ -10,7 +10,7 @@
 <p><%= longURL %></p>
 <form action="/urls/<%= shortURL%>" method="POST" style="margin:150px;">
       <label for="longURL">Enter a new long URL for it:</label>
-      <input id="longURL" type="text" name="longURL">
+      <input id="longURL" type="text" name="longURL" value="http://">
       <input type="submit" value="Update">
 </form>
 <% include ../partials/_footer %>
