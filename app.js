@@ -31,18 +31,22 @@ function generateRandomString(length){
     return text;
 }
 
+//Just for greatings
 app.get("/", (req, res) => {
   res.end("Hello I'm Johnson Liu!");
 });
 
+//Put the url database into JSON format
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+//Another greeting
 app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+//Redirect to long url according to short url
 app.get("/u/:shortURL", (req, res) => {
   const shortURL=req.params.shortURL;
   const longURL=urlDatabase[shortURL];
@@ -51,34 +55,42 @@ app.get("/u/:shortURL", (req, res) => {
 
 // about page
 app.get('/about', function(req, res) {
-    res.render('pages/about');
+    let templateVars={username: req.cookies['username']}
+    res.render('pages/about',templateVars);
 });
 
+//Add new url
 app.get("/urls/new", (req, res) => {
-  res.render("pages/urls_new");
+  let templateVars={username: req.cookies['username']}
+  res.render("pages/urls_new",templateVars);
 });
 
+//Delete url
 app.get("urls/delete",(req,res)=>{
-  res.render("pages/urls_index");
+  let templateVars={username: req.cookies['username']}
+  res.render("pages/urls_index",templateVars);
 });
 
+//Show a particular object with short url
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id],username: req.cookies['username'] };
   res.render("pages/urls_show", templateVars);
 });
 
+//urls page
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase, username: req.cookies['username'] };
   res.render("pages/urls_index", templateVars);
 });
 
+//Update long url for a short url
 app.post("/urls", (req, res) => {
-  //console.log(req.body.longURL);  // debug statement to see POST parameters
   const randomString = generateRandomString(randomStringLength);
   urlDatabase[randomString]=req.body.longURL;
   res.redirect("http://localhost:8080/urls/"+randomString);         // Respond with random string generated
 });
 
+//Delete an entry in url database
 app.post("/urls/:id/delete",(req,res)=>{
   console.log(req.params.id);
   delete urlDatabase[req.params.id];
@@ -86,10 +98,23 @@ app.post("/urls/:id/delete",(req,res)=>{
   res.redirect("/urls");
 });
 
+//Show a paritcular url entry in database
 app.post("/urls/:id",(req,res)=>{
   urlDatabase[req.params.id]=req.body.longURL;
   res.redirect("/urls/"+req.params.id);
 });
+
+//Loigin cookie
+app.post("/login",(req, res)=>{
+  res.cookie('username',req.body.name,{ expires: new Date(Date.now() + 30000), httpOnly: true });
+  res.redirect("/urls");
+});
+
+//Logout
+app.post("/logout",(req,res)=>{
+  res.clearCookie('username');
+  res.redirect("urls");
+})
 
 app.listen(8080);
 console.log('Port 8080 is working');

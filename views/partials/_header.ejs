@@ -9,6 +9,14 @@
           <input type="submit" value="Login">
         </form>
       </li>
+      <%if (username !== undefined) { %>
+        <li><%= username%><li>
+        <form action="/logout" method="POST">
+          <input type="submit" value="Logout">
+        </form>
+      <% } else{ %>
+        <li>NOTLOGGEDIN</li>
+      <% } %>
     </ul>
   </div>
 </nav>
