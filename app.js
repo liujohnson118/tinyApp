@@ -18,10 +18,6 @@ var urlDatabase = {
   "lexus1": "http://www.lexus.ca",
 };
 
-var myObj={
-  "a":1,
-  "b":2
-}
 
 function generateRandomString(length){
   var text = "";
@@ -63,7 +59,7 @@ app.get("/urls/new", (req, res) => {
 
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id.substring(1), longURL: urlDatabase[req.params.id.substring(1)] };
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("pages/urls_show", templateVars);
 });
 
@@ -79,8 +75,8 @@ app.post("/urls/new", (req, res) => {
   res.send(randomString+" "+req.body.longURL);         // Respond with random string generated
 });
 
-app.post("/urls/:id",(req,res)=>{
-  console.log(req.params);
+app.post("/urls/:id/delete",(req,res)=>{
+  console.log(req.params.id);
 });
 
 app.listen(8080);
