@@ -18,6 +18,11 @@ var urlDatabase = {
   "lexus1": "http://www.lexus.ca",
 };
 
+var myObj={
+  "a":1,
+  "b":2
+}
+
 function generateRandomString(length){
   var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -30,7 +35,7 @@ function generateRandomString(length){
 }
 
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  res.end("Hello I'm Johnson Liu!");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -56,16 +61,26 @@ app.get("/urls/new", (req, res) => {
   res.render("pages/urls_new");
 });
 
-app.post("/urls", (req, res) => {
-  //console.log(req.body.longURL);  // debug statement to see POST parameters
-  const randomString = generateRandomString(randomStringLength);
-  urlDatabase[randomString]=req.body.longURL;
-  res.send(randomString);         // Respond with 'Ok' (we will replace this)
-});
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id.substring(1), longURL: urlDatabase[req.params.id.substring(1)] };
   res.render("pages/urls_show", templateVars);
+});
+
+app.get("/urls", (req, res) => {
+  let templateVars = { urls: urlDatabase };
+  res.render("pages/urls_index", templateVars);
+});
+
+app.post("/urls/new", (req, res) => {
+  //console.log(req.body.longURL);  // debug statement to see POST parameters
+  const randomString = generateRandomString(randomStringLength);
+  urlDatabase[randomString]=req.body.longURL;
+  res.send(randomString+" "+req.body.longURL);         // Respond with random string generated
+});
+
+app.post("/urls/:id",(req,res)=>{
+  console.log(req.params);
 });
 
 app.listen(8080);

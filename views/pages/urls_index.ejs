@@ -6,7 +6,12 @@
 </head>
 <body>
 <% include ../partials/header %>
-<p><%= JSON.stringify(urls) %></p>
+<h2>All URLs</h2>
+<ul>
+  <% Object.keys(urls).forEach(function(key,index){%>
+    <li> <%= key%> -> <%= urls[key]%></li>
+  <%});%>
+</ul>
 <% include ../partials/footer %>
 </body>
 </html>
