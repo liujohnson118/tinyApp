@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <% include ../partials/head %>
+  <% include ../partials/_head %>
   <title>TinyApp</title>
 </head>
 <body>
-<% include ../partials/header %>
+<% include ../partials/_header %>
 <p><%= shortURL %></p>
 <p><%= longURL %></p>
 <form action="/urls/<%= shortURL%>" method="POST" style="margin:150px;">
@@ -13,6 +13,6 @@
       <input id="longURL" type="text" name="longURL">
       <input type="submit" value="Update">
 </form>
-<% include ../partials/footer %>
+<% include ../partials/_footer %>
 </body>
 </html>

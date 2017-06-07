@@ -4,9 +4,11 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
+const cookieParser=require('cookie-parser');
 const randomStringLength=6;
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(cookieParser());
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
