@@ -9,7 +9,10 @@
 <h2>All URLs</h2>
 <ul>
   <% Object.keys(urls).forEach(function(key,index){%>
-    <li> <%= key%> -> <%= urls[key]%></li>
+    <li> <%= key%> -> <%= urls[key]%>
+    <form action="/urls/<%= key%>/delete" method="POST">
+      <input type="submit" value="Delete">
+    </form></li>
   <%});%>
 </ul>
 <% include ../partials/footer %>

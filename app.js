@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 const randomStringLength=6;
 app.use(bodyParser.urlencoded({extended: true}));
-
+app.use(bodyParser.json());
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
@@ -43,7 +43,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const shortURL=req.params.shortURL.substring(1);
+  const shortURL=req.params.shortURL;
   const longURL=urlDatabase[shortURL];
   res.redirect(longURL);
  });
@@ -57,6 +57,9 @@ app.get("/urls/new", (req, res) => {
   res.render("pages/urls_new");
 });
 
+app.get("urls/delete",(req,res)=>{
+  res.render("pages/urls_index");
+});
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
@@ -68,18 +71,21 @@ app.get("/urls", (req, res) => {
   res.render("pages/urls_index", templateVars);
 });
 
-app.post("/urls/new", (req, res) => {
+app.post("/urls", (req, res) => {
   //console.log(req.body.longURL);  // debug statement to see POST parameters
   const randomString = generateRandomString(randomStringLength);
   urlDatabase[randomString]=req.body.longURL;
-  res.send(randomString+" "+req.body.longURL);         // Respond with random string generated
+  res.redirect("http://localhost:8080/urls/"+randomString);         // Respond with random string generated
 });
 
 app.post("/urls/:id/delete",(req,res)=>{
   console.log(req.params.id);
+  delete urlDatabase[req.params.id];
+  let templateVars = { urls: urlDatabase };
+  res.redirect("/urls");
 });
 
 app.listen(8080);
-console.log('8080 is the magic port');
+console.log('Port 8080 is working');
 
 
