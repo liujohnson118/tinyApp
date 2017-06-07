@@ -14,8 +14,7 @@ app.set('view engine', 'ejs');
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-  "lexus1": "http://www.lexus.ca",
+  "9sm5xK": "http://www.google.com"
 };
 
 
@@ -84,6 +83,11 @@ app.post("/urls/:id/delete",(req,res)=>{
   let templateVars = { urls: urlDatabase };
   res.redirect("/urls");
 });
+
+app.post("/urls/:id",(req,res)=>{
+  urlDatabase[req.params.id]=req.body.longURL;
+  res.redirect("/urls/"+req.params.id);
+})
 
 app.listen(8080);
 console.log('Port 8080 is working');

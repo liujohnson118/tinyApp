@@ -10,9 +10,13 @@
 <ul>
   <% Object.keys(urls).forEach(function(key,index){%>
     <li> <%= key%> -> <%= urls[key]%>
-    <form action="/urls/<%= key%>/delete" method="POST">
+    <form action="/urls/<%= key%>/delete" method="POST" style="margin:20px;">
       <input type="submit" value="Delete">
-    </form></li>
+    </form>
+    <form action="/urls/<%= key%>" method="POST">
+      <input type="submit" value="Update" margin: 8px style="margin:5px;">
+    </form>
+    </li>
   <%});%>
 </ul>
 <% include ../partials/footer %>
