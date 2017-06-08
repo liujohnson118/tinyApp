@@ -3,25 +3,11 @@
     <ul class="nav navbar-nav">
       <li><a href="/urls">Home</a></li>
       <li><a href="/urls/new">Add URL</a></li>
-      <li>
-        <form action="/login" method="POST">
-          <input id="name" type="text" name="name" placeholder="your user name" style="width: 300px margin: 45px">
-          <input type="submit" value="Login">
-        </form>
-      </li>
-      <%if (username !== undefined) { %>
-        <li><%= username%><li>
-        <form action="/logout" method="POST">
-          <input type="submit" value="Logout">
-        </form>
-      <% } else{ %>
-        <li>NOTLOGGEDIN</li>
-      <% } %>
-      <li>
-        <form action="/user_registration" method="GET">
-          <input type="submit" value="Register New">
-        </form>
-      </li>
+      <li><a href="/login">Log In</a></li>
+      <li><a href="/user_registration">Register</a></li>
+      <form action="/logout" method="POST">
+        <input type="submit" value="Log out">
+      </form>
     </ul>
   </div>
 </nav>
