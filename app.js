@@ -35,7 +35,7 @@ function generateRandomString(length){
 //Just for greatings
 app.get("/", (req, res) => {
   console.log("/ is used");
-  var user;
+  var user={};
   if(req.cookies['user_id']!==undefined){
     user=users[req.cookies['user_id']];
   }
@@ -74,27 +74,37 @@ app.get('/about', function(req, res) {
 //Add new url
 app.get("/urls/new", (req, res) => {
   console.log("urls/new used");
-  let user={user: users[req.cookies['user_id']]}
-  res.render("pages/urls_new",user);
+  var user={};
+  if(req.cookies['user_id']!==undefined){
+    user=users[req.cookies['user_id']];
+  }
+  res.render("pages/urls_new",{user:user});
 });
 
 //Delete url
 app.get("urls/delete",(req,res)=>{
   console.log("delete used");
-  let user={user: users[req.cookies['user_id']]}
-  res.render("pages/urls_index",user);
+  var user={};
+  if(req.cookies['user_id']!==undefined){
+    user=users[req.cookies['user_id']];
+  }
+  res.render("pages/urls_index",{user:user});
 });
 
 //Show a particular object with short url
 app.get("/urls/:id", (req, res) => {
   console.log("short url id used");
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id],useremail: req.cookies['useremail'] };
+  var user={};
+  if(req.cookies['user_id']!==undefined){
+    user=users[req.cookies['user_id']];
+  }
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id], user:user};
   res.render("pages/urls_show", templateVars);
 });
 
 //urls page
 app.get("/urls", (req, res) => {
-  var user;
+  var user={};
   if(req.cookies['user_id']!==undefined){
     user=users[req.cookies['user_id']];
   }
@@ -113,8 +123,8 @@ app.post("/urls", (req, res) => {
 //User registration
 app.get("/user_registration",(req,res)=>{
   console.log("user registration get used")
-  let templateVars = { urls: urlDatabase, useremail: req.cookies['useremail'] };
-  res.render("pages/user_registration",templateVars);
+  var user={};
+  res.render("pages/user_registration",{user:user});
 });
 
 //Create new user
@@ -155,7 +165,7 @@ app.post("/urls/:id",(req,res)=>{
 //Login get
 app.get("/login",(req,res)=>{
   console.log("login get used");
-  res.render("pages/user_login");
+  res.render("pages/user_login",{user:{}});
 });
 
 //Login post

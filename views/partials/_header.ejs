@@ -5,9 +5,15 @@
       <li><a href="/urls/new">Add URL</a></li>
       <li><a href="/login">Log In</a></li>
       <li><a href="/user_registration">Register</a></li>
-      <form action="/logout" method="POST">
-        <input type="submit" value="Log out">
-      </form>
+      <% if (user.email!==undefined) { %>
+        <li>Logged In as<li>
+        <li><%= user.email%></li>
+        <form action="/logout" method="POST">
+          <input type="submit" value="Logout">
+        </form>
+      <% } else{ %>
+        <li>NOTLOGGEDIN</li>
+      <% } %>
     </ul>
   </div>
 </nav>
