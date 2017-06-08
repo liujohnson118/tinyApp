@@ -13,21 +13,20 @@ app.use(cookieParser());
 app.set('view engine', 'ejs');
 
 // use res.render to load up an ejs view file
-
-var urlDatabase = {
+//Database for urls, keys are short urls and values are long urls
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+const users={};
 
 function generateRandomString(length){
   var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
     for( var i=0; i < length; i++ ){
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
-
     return text;
 }
 
@@ -90,9 +89,21 @@ app.post("/urls", (req, res) => {
   res.redirect("http://localhost:8080/urls/"+randomString);         // Respond with random string generated
 });
 
+//User registration
+app.get("/user_registration",(req,res)=>{
+  let templateVars = { urls: urlDatabase, username: req.cookies['username'] };
+  res.render("pages/user_registration",templateVars);
+});
+
+//Create new user
+app.post("/user_registration",(req,res)=>{
+  const userRandomID=generateRandomString(randomStringLength);
+  users[userRandomID]={id: userRandomID, email: req.body.email, password: req.body.password};
+  res.redirect("/urls");
+});
+
 //Delete an entry in url database
 app.post("/urls/:id/delete",(req,res)=>{
-  console.log(req.params.id);
   delete urlDatabase[req.params.id];
   let templateVars = { urls: urlDatabase };
   res.redirect("/urls");

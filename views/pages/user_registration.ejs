@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <% include ../partials/_head %>
+    <title>user registration</title>
+  </head>
+  <body style="font-size:20px; padding:50px;">
+    <% include ../partials/_header %>
+    <form action="/user_registration" method="POST" style="margin:150px;">
+      <label for="email">Enter your email:</label>
+      <input id="email" type="email" name="email" style="width: 300px">
+      <label for="password">Enter your password:</label>
+      <input id="password" type="password" name="password" style="width: 300px">
+      <input type="submit" value="Submit">
+    </form>
+    <% include ../partials/_footer %>
+  </body>
+</html>
