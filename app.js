@@ -30,10 +30,18 @@ const urlDatabase = {
 
 const users = {}; //id: 6 alphaneumeric string, email: user email and has '@', password: password in string
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+/*
+* Function to simulate sleeping or holding execution of next line of code
+* input: milliseconds - time to sleep in milliseconds
+*/
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
 }
-
 
 /*
 * function to generate a random alphaneumeric string of a certain length
@@ -144,7 +152,7 @@ app.post("/urls/new", (req, res) => {
 app.get("urls/delete",(req,res)=>{
   console.log("delete used");
   var user = {};
-  if(req.cookies['user_id'] !== undefined){
+  if(req.session['user_id'] !== undefined){
     user = users[req.session['user_id']];
   }
   res.render("pages/urls_index",{user:user});
@@ -210,7 +218,7 @@ app.post("/user_registration",(req,res)=>{
     res.send('Error: Invalid entry of email or password', 404);
   }else{
     users[userRandomID] = {id: userRandomID, email: req.body.email, password: bcrypt.hashSync(req.body.password,10)};
-    //res.cookie(userRandomID,userRandomID);
+    req.session.user_id = userRandomID;
     res.redirect("/");
   }
 });
@@ -260,7 +268,6 @@ app.post("/login",(req, res)=>{
 //Logout
 app.post("/logout",(req,res)=>{
   console.log("logout post used");
-  console.log(req.cookies);
   res.clearCookie(req.session.user_id);
   res.clearCookie('session');
   res.clearCookie("session.sig");
