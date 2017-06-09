@@ -9,11 +9,11 @@
 <h2>All URLs</h2>
 <ul>
   <% Object.keys(urls).forEach(function(key,index){%>
-    <li> <%= key%> -> <a href="<%= urls[key].url%>"><%= urls[key].url%></a>
+    <li> <a href="../u/<%= key%>"><%= key%></a> -> <a href="<%= urls[key].url%>"><%= urls[key].url%></a>
     <form action="/urls/<%= key%>/delete" method="POST" style="margin:20px;">
       <input type="submit" value="Delete">
     </form>
-    <form action="/urls/<%= key%>" method="POST">
+    <form action="/urls/<%= key%>" method="GET">
       <input type="submit" value="Update" margin: 8px style="margin:5px;">
     </form>
     </li>

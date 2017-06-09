@@ -7,10 +7,12 @@ const bodyParser = require("body-parser");
 const cookieParser=require('cookie-parser');
 const methodOverride = require('method-override')
 const cookieSession = require('cookie-session');
-const randomStringLength=6;
+const randomStringLength = 6;
+const bcrypt = require('bcrypt');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use
 app.use(methodOverride());
 app.use(cookieSession({
   secret: 'Vancouver downtown',
@@ -26,8 +28,18 @@ const urlDatabase = {
   "lexus1": {url:"http://www.lexus.com",userID:"lexus"}
 };
 
-const users={}; //id: 6 alphaneumeric string, email: user email and has '@', password: password in string
+const users = {}; //id: 6 alphaneumeric string, email: user email and has '@', password: password in string
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+/*
+* function to generate a random alphaneumeric string of a certain length
+* Input: length - length of random string to be generated
+* Return: text - random string of length specified generated
+*/
 function generateRandomString(length){
   var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -37,31 +49,40 @@ function generateRandomString(length){
     return text;
 }
 
+/*
+* function to subset a url data base according to user ID
+* input: id - id of user
+* input: db - url database to be subsetted
+* return: subsetted url database of input db according to user ID id
+*/
 function urlsForUser(id,db){
-  urlsForThisUser={};
+  urlsForThisUser = {};
   for(shortURL in urlDatabase){
-    if(db[shortURL].userID===id){
-      urlsForThisUser[shortURL]={url:urlDatabase[shortURL].url, userID:id};
+    if(db[shortURL].userID === id){
+      urlsForThisUser[shortURL] = {url:urlDatabase[shortURL].url, userID:id};
     }
   }
   return urlsForThisUser;
 }
 
-console.log("Subsetted:")
-console.log(urlsForUser("ALL",urlDatabase));
 
-
-//Just for greatings
+/*
+* GET function to render the page with all existing urls and their shortened version
+* The rendered page dispalys all short and long urls created by all users but does not allow updating
+* or deleting. If logged in, the user may update/delete individual urls in the HOME page
+*/
 app.get("/", (req, res) => {
   console.log("/ is used");
-  var user={};
-  if(req.cookies['user_id']!==undefined){
-    user=users[req.cookies['user_id']];
+  if(req.session.user_id !== undefined){
+    res.redirect("/urls");
+  }else{
+    res.redirect("/login");
   }
-  res.render("pages/urls_all",{urls:urlDatabase,user:user});
 });
 
-//Put the url database into JSON format
+/*
+* GET function to render a page of exisiting url database into JSON format
+*/
 app.get("/urls.json", (req, res) => {
   console.log("/urls.json used");
   res.json(urlDatabase);
@@ -73,75 +94,97 @@ app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-//Redirect to long url according to short url
+/*
+* GET function to redirect to long url according to short url
+* For example, if the long url associated with short url aaaaa1 is www.cbc.ca, www.cbc.ca will be redirected
+*/
 app.get("/u/:shortURL", (req, res) => {
   console.log("get short url used");
-  const shortURL=req.params.shortURL;
-  const longURL=urlDatabase[shortURL];
-  res.redirect(longURL);
+  const shortURL = req.params.shortURL;
+  if(Object.keys(urlDatabase).indexOf(shortURL)===-1){
+    res.status(403).send("The short url does not exist!")
+  }else{
+    const longURL = urlDatabase[shortURL].url;
+    res.redirect(longURL);
+  }
  });
 
-// about page
-app.get('/about', function(req, res) {
-    console.log("about used");
-    let user={user: users[req.cookies['useremail']]}
-    res.render('pages/about',templateVars);
-});
 
-//Add new url
+/*
+* GET function for adding a new url to database
+* If logged in, the user can follow prompts to add a new url
+* If not logged in, the user will be redirected to the login page
+*/
 app.get("/urls/new", (req, res) => {
   console.log("urls/new used");
-  var user={};
-  if(req.cookies['user_id']!==undefined){
-    user=users[req.cookies['user_id']];
+  var user = {};
+  if(req.session['user_id'] !== undefined){
+    user = users[req.session['user_id']];
     res.render("pages/urls_new",{user:user});
   }else{
-    res.redirect("/login");
+    res.status(403).send("Error: Please log in first before you can add a new url");
   }
 });
 
-//Post method for adding new url
+/*
+* POST method for creating a new URL
+* This post method can only be used when the user has logged in and is on pages/urls_new
+*/
 app.post("/urls/new", (req, res) => {
   console.log("/urls/new post used");
   const randomString = generateRandomString(randomStringLength);
-  urlDatabase[randomString]={url:req.body.longURL, userID:req.cookies['user_id']};
-  res.redirect("http://localhost:8080/urls/"+randomString);
+  urlDatabase[randomString] = {url:req.body.longURL, userID:req.session['user_id']};
+  res.redirect("http://localhost:8080/urls/" + randomString);
 });
 
-//Delete url
+/*
+* GET method for deleting a url
+* Not accessible if not logged in
+ */
 app.get("urls/delete",(req,res)=>{
   console.log("delete used");
-  var user={};
-  if(req.cookies['user_id']!==undefined){
-    user=users[req.cookies['user_id']];
+  var user = {};
+  if(req.cookies['user_id'] !== undefined){
+    user = users[req.session['user_id']];
   }
   res.render("pages/urls_index",{user:user});
 });
 
-//Show a particular object with short url
+/*
+* GET show a particular long url associated with a short url
+* If logged in, the user has the option to update the long url associated with the short url
+* If the logged in user does not own the short url requested, error is returned
+* Not invokable if not logged in
+*/
 app.get("/urls/:id", (req, res) => {
   console.log("short url id used");
-  var user={};
-  if(req.cookies['user_id']!==undefined){
-    user=users[req.cookies['user_id']];
+  var user = {};
+  if(req.session['user_id'] !== undefined){
+    user = users[req.session['user_id']];
+    userDb=urlsForUser(req.session['user_id'],urlDatabase);
+    if(Object.keys(userDb).indexOf(req.params.id) !== -1){
+      let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id].url, user:user};
+      res.render("pages/urls_show", templateVars);
+    }else{
+      res.status(404).send("Error: the short url you requested is not in your url database");
+    }
+    return;
+  }else{
+    res.status(403).send("Error: Please log in first before you can update an existing url");
   }
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id].url, user:user};
-  res.render("pages/urls_show", templateVars);
 });
 
-//urls page
+/*
+* GET method for a logged in user's urls
+* If not logged in, error is sent
+*/
 app.get("/urls", (req, res) => {
-  var user={};
-  if(req.cookies['user_id']!==undefined){
-    user=users[req.cookies['user_id']];
-    console.log("starting to subset for user ID "+req.cookies['user_id']);
-    db=urlsForUser(req.cookies['user_id'],urlDatabase);
-    console.log("URLS for current login:");
-    console.log(db);
-    console.log("fuckover");
+  var user = users[req.session['user_id']];;
+  if(user){
+    db = urlsForUser(req.session['user_id'],urlDatabase);
     res.render("pages/urls_index",{urls: db,user:user});
   }else{
-    res.redirect("/login");
+    res.status(404).send("Error: Please login before you can see your urls!");
   }
 });
 
@@ -149,25 +192,25 @@ app.get("/urls", (req, res) => {
 //User registration
 app.get("/user_registration",(req,res)=>{
   console.log("user registration get used")
-  var user={};
+  var user = {};
   res.render("pages/user_registration",{user:user});
 });
 
 //Create new user
 app.post("/user_registration",(req,res)=>{
   console.log("user_registration post used")
-  const userRandomID=generateRandomString(randomStringLength);
+  const userRandomID = generateRandomString(randomStringLength);
   for(var userID in users){
-    if(users[userID].email===req.body.email){
-      res.status(403).send('User email already exists! Please select a new one!');
+    if(users[userID].email === req.body.email){
+      res.status(403).send('Error: User email already exists! Please select a new one!');
       return;
     }
   }
-  if(req.body.email.indexOf('@')===-1 || req.body.password===''){
-    res.send('Invalid entry of email or password', 404);
+  if(req.body.email.indexOf('@') === -1 || req.body.password === ''){
+    res.send('Error: Invalid entry of email or password', 404);
   }else{
-    users[userRandomID]={id: userRandomID, email: req.body.email, password: req.body.password};
-    res.cookie(userRandomID,userRandomID);
+    users[userRandomID] = {id: userRandomID, email: req.body.email, password: bcrypt.hashSync(req.body.password,10)};
+    //res.cookie(userRandomID,userRandomID);
     res.redirect("/");
   }
 });
@@ -176,15 +219,15 @@ app.post("/user_registration",(req,res)=>{
 app.post("/urls/:id/delete",(req,res)=>{
   console.log("delete entry post used");
   delete urlDatabase[req.params.id];
-  let templateVars = { urls: urlDatabase,user:users[req.cookies['user_id']] };
+  let templateVars = { urls: urlDatabase,user:users[req.session['user_id']] };
   res.redirect("/urls");
 });
 
 //Show a paritcular url entry in database
 app.post("/urls/:id",(req,res)=>{
   console.log("url id post used");
-  urlDatabase[req.params.id].url=req.body.longURL;
-  res.redirect("/urls/"+req.params.id);
+  urlDatabase[req.params.id].url = req.body.longURL;
+  res.redirect("/urls");
 });
 
 
@@ -197,13 +240,18 @@ app.get("/login",(req,res)=>{
 //Login post
 app.post("/login",(req, res)=>{
   console.log("login post used");
-  allIds=Object.keys(users);
+  allIds = Object.keys(users);
   for (var userID in users) {
-    var user=users[userID];
-    if(user.email===req.body.useremail){
-      res.cookie('user_id',userID);
-      res.redirect('/urls');
-      return;
+    var user = users[userID];
+    if(user.email === req.body.useremail){
+      if(bcrypt.compareSync(req.body.userpassword, user.password)){
+        req.session.user_id = userID;
+        console.log("Encrpted user ID is: " + req.session.user_id);
+        res.redirect('/urls');
+        return;
+      }else{
+        res.status(403).send('Wrong password');
+      }
     }
   }
   res.status(403).send('No user present');
@@ -213,7 +261,9 @@ app.post("/login",(req, res)=>{
 app.post("/logout",(req,res)=>{
   console.log("logout post used");
   console.log(req.cookies);
-  res.clearCookie('user_id');
+  res.clearCookie(req.session.user_id);
+  res.clearCookie('session');
+  res.clearCookie("session.sig");
   res.redirect("urls");
 })
 
