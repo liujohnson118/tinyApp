@@ -10,12 +10,6 @@
 <ul>
   <% Object.keys(urls).forEach(function(key,index){%>
     <li> <%= key%> -> <a href="<%= urls[key].url%>"><%= urls[key].url%></a>
-    <form action="/urls/<%= key%>/delete" method="POST" style="margin:20px;">
-      <input type="submit" value="Delete">
-    </form>
-    <form action="/urls/<%= key%>" method="POST">
-      <input type="submit" value="Update" margin: 8px style="margin:5px;">
-    </form>
     </li>
   <%});%>
 </ul>
