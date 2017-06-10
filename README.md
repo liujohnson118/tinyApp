@@ -32,7 +32,7 @@ This is a full stack web app built with Express and NodeJS that enables users to
 
 ## Your Profile page
 
-  - In the header, there is a button called "Your Profile" that links to `/urls` if there is a user logged in like shown below.
+  - In the header, there is a button called "Your Profile" that links to `/urls` if there is a user logged in like shown below. There will be pairs of short urls and long urls. The short and long urls are clickable and will redirect user to the associated long url when clicked.
   !["Screenshot of /urls example when logged in"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_newUrlAddedShow.png)
   - If no user logged in and "Your Profile" button is clicked then the following error page will be displayed.
   !["Screenshot of error accessing user profile when not logged in"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_errorSeeingProfile.png)
@@ -55,3 +55,23 @@ This is a full stack web app built with Express and NodeJS that enables users to
   !["Screenshot of new url added"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_newUrlAdded.png)
   - At this point, if the user goes to his or her profile page, the url added should be displayed.
   !["Screenshot of user profile after new url added"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_newUrlAddedShow.png)
+
+## Delete url
+  - Once logged in, the user can delete a url in his or her profile page by clicking the `Delete` button.
+
+## Update url
+  - Once logged in, the user may update the url of a given short url in his or her profile by clicking the `Update` button and following subsequent prompts.
+
+## Redirecting using url
+
+  - If a url has been stored in our database, the user may simply type `localhost:8080/u/xxxxxx` to be redirected to the associated long url where `xxxxxx` is the associated short url regardless of login status
+
+  - If `xxxxxx` is a short url not stored in the database, then the following error page will be displayed
+  !["Screenshot of short url does not exist"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_errorShortUrlDNE.png)
+
+## Requesting to see short and long url pairs
+
+  - When logged in, the user may type into the browser `localhost:8080/urls/xxxxxx` where xxxxxx is a stored short url in his or her profile. Then, the short url and associated long url will be displayed to the user.
+  - If the short url is not stored in his or her profile, error page will be displayed.
+  - If the user requests `localhost:8080/urls/xxxxxx` without logging in first, an error page telling the user to login first will be displayed.
+
