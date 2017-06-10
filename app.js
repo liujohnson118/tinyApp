@@ -1,5 +1,5 @@
-// server.js
-// load the things we need
+//app.js
+//Load modules
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -21,27 +21,15 @@ app.use(cookieSession({
 app.set('view engine', 'ejs');
 
 // use res.render to load up an ejs view file
-//Database for urls, keys are short urls and values are long urls
+// Object for database for urls, keys are short urls and values are long urls
+// b2xVn2 and 9sm5xK provided for the convenience of debugging
 const urlDatabase = {
   "b2xVn2": {url:"http://www.lighthouselabs.ca", userID:"ALL"},
   "9sm5xK": {url:"http://www.google.com", userID:"ALL"},
-  "lexus1": {url:"http://www.lexus.com",userID:"lexus"}
 };
 
+//Object for storing all users
 const users = {}; //id: 6 alphaneumeric string, email: user email and has '@', password: password in string
-
-/*
-* Function to simulate sleeping or holding execution of next line of code
-* input: milliseconds - time to sleep in milliseconds
-*/
-function sleep(milliseconds) {
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
-    }
-  }
-}
 
 /*
 * function to generate a random alphaneumeric string of a certain length
@@ -80,7 +68,6 @@ function urlsForUser(id,db){
 * or deleting. If logged in, the user may update/delete individual urls in the HOME page
 */
 app.get("/", (req, res) => {
-  console.log("/ is used");
   if(req.session.user_id !== undefined){
     res.redirect("/urls");
   }else{
@@ -92,14 +79,7 @@ app.get("/", (req, res) => {
 * GET function to render a page of exisiting url database into JSON format
 */
 app.get("/urls.json", (req, res) => {
-  console.log("/urls.json used");
   res.json(urlDatabase);
-});
-
-//Another greeting
-app.get("/hello", (req, res) => {
-  console.log("hello used");
-  res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 /*
@@ -107,9 +87,8 @@ app.get("/hello", (req, res) => {
 * For example, if the long url associated with short url aaaaa1 is www.cbc.ca, www.cbc.ca will be redirected
 */
 app.get("/u/:shortURL", (req, res) => {
-  console.log("get short url used");
   const shortURL = req.params.shortURL;
-  if(Object.keys(urlDatabase).indexOf(shortURL)===-1){
+  if(Object.keys(urlDatabase).indexOf(shortURL) === -1){
     res.status(403).send("The short url does not exist!")
   }else{
     const longURL = urlDatabase[shortURL].url;
@@ -124,7 +103,6 @@ app.get("/u/:shortURL", (req, res) => {
 * If not logged in, the user will be redirected to the login page
 */
 app.get("/urls/new", (req, res) => {
-  console.log("urls/new used");
   var user = {};
   if(req.session['user_id'] !== undefined){
     user = users[req.session['user_id']];
@@ -139,7 +117,6 @@ app.get("/urls/new", (req, res) => {
 * This post method can only be used when the user has logged in and is on pages/urls_new
 */
 app.post("/urls/new", (req, res) => {
-  console.log("/urls/new post used");
   const randomString = generateRandomString(randomStringLength);
   urlDatabase[randomString] = {url:req.body.longURL, userID:req.session['user_id']};
   res.redirect("http://localhost:8080/urls/" + randomString);
@@ -150,7 +127,6 @@ app.post("/urls/new", (req, res) => {
 * Not accessible if not logged in
  */
 app.get("urls/delete",(req,res)=>{
-  console.log("delete used");
   var user = {};
   if(req.session['user_id'] !== undefined){
     user = users[req.session['user_id']];
@@ -165,11 +141,10 @@ app.get("urls/delete",(req,res)=>{
 * Not invokable if not logged in
 */
 app.get("/urls/:id", (req, res) => {
-  console.log("short url id used");
   var user = {};
   if(req.session['user_id'] !== undefined){
     user = users[req.session['user_id']];
-    userDb=urlsForUser(req.session['user_id'],urlDatabase);
+    userDb = urlsForUser(req.session['user_id'],urlDatabase);
     if(Object.keys(userDb).indexOf(req.params.id) !== -1){
       let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id].url, user:user};
       res.render("pages/urls_show", templateVars);
@@ -197,16 +172,21 @@ app.get("/urls", (req, res) => {
 });
 
 
-//User registration
+/*
+* GET method for user registration
+* Renders user registration page with
+*/
 app.get("/user_registration",(req,res)=>{
-  console.log("user registration get used")
-  var user = {};
-  res.render("pages/user_registration",{user:user});
+  res.render("pages/user_registration",{user:{}});
 });
 
-//Create new user
+/*
+* POST method for new user registration
+* If user enters an e-mail already existing in our database, reject registration with 403 error
+* If user enters valid email address and a nonempy password, accept registration, set user_id cookie,
+* login automatically
+*/
 app.post("/user_registration",(req,res)=>{
-  console.log("user_registration post used")
   const userRandomID = generateRandomString(randomStringLength);
   for(var userID in users){
     if(users[userID].email === req.body.email){
@@ -223,32 +203,40 @@ app.post("/user_registration",(req,res)=>{
   }
 });
 
-//Delete an entry in url database
+/*
+* POST method to delete an existing url associated with the user
+* Upon completion, redirect back to homepage for user
+*/
 app.post("/urls/:id/delete",(req,res)=>{
-  console.log("delete entry post used");
   delete urlDatabase[req.params.id];
   let templateVars = { urls: urlDatabase,user:users[req.session['user_id']] };
   res.redirect("/urls");
 });
 
-//Show a paritcular url entry in database
+/*
+* POST method for changing the associated long url
+* Upon compeletion, redirect back to home page
+*/
 app.post("/urls/:id",(req,res)=>{
-  console.log("url id post used");
   urlDatabase[req.params.id].url = req.body.longURL;
   res.redirect("/urls");
 });
 
 
-//Login get
+/*
+* GET method for rendering login page
+*/
 app.get("/login",(req,res)=>{
-  console.log("login get used");
   res.render("pages/user_login",{user:{}});
 });
 
-//Login post
+/*
+* POST method for user log in
+* If user enters a valid email and correct password, redirect to /urls (home page),
+* If password is wrong, send error message
+* If user enters a nonexisting email address, send error message
+*/
 app.post("/login",(req, res)=>{
-  console.log("login post used");
-  allIds = Object.keys(users);
   for (var userID in users) {
     var user = users[userID];
     if(user.email === req.body.useremail){
@@ -259,22 +247,25 @@ app.post("/login",(req, res)=>{
         return;
       }else{
         res.status(403).send('Wrong password');
+        return;
       }
     }
   }
   res.status(403).send('No user present');
 });
 
-//Logout
+/*
+* POST method for log out
+* Upon compeletion, clear session and session.sig cookies and redirect to /
+*/
 app.post("/logout",(req,res)=>{
-  console.log("logout post used");
   res.clearCookie(req.session.user_id);
   res.clearCookie('session');
   res.clearCookie("session.sig");
-  res.redirect("urls");
+  res.redirect("/");
 })
 
-app.listen(8080);
+app.listen(8080); //Using port 8080
 console.log('Port 8080 is working');
 
 

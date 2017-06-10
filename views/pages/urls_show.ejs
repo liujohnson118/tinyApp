@@ -2,14 +2,14 @@
 <html>
 <head>
   <% include ../partials/_head %>
-  <title>TinyApp</title>
+  <title>TinyApp Show URL</title>
 </head>
 <body>
 <% include ../partials/_header %>
 <p><%= shortURL %></p>
 <p><%= longURL %></p>
 <form action="/urls/<%= shortURL%>" method="POST" style="margin:150px;">
-      <label for="longURL">Enter a new long URL for it:</label>
+      <label for="longURL">Enter a new long URL for it if you change your mind:</label>
       <input id="longURL" type="text" name="longURL" value="http://">
       <input type="submit" value="Update">
 </form>
