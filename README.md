@@ -45,3 +45,13 @@ This is a full stack web app built with Express and NodeJS that enables users to
   !["Screenshot of no user present"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_noUser.png)
   - If the password entered on the login page returns false when running bcrypt.compareSync with the stored hashed password generated at registering, the following wrong password page will be displayed
   !["Screenshot of wrong password"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_wrongPassword.png)
+
+## Add new url
+  - If no user is logged in and the `Add URL` button on the header is clicked, then the following error page will be displayed
+  !["Screenshot of error adding url before login"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_errorAddUrlBeforeLogIn.png)
+  - If logged in, the following page will be displayed for the user to add a url with `http://` at the beginning
+  !["Screenshot of adding new url"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_addNewUrl.png)
+  - Once the user has added a new url, the short url generated for the newly added url will be displayed together with the newly added url. If the user would like to change the long url, he or she has the option to do so as shown below.
+  !["Screenshot of new url added"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_newUrlAdded.png)
+  - At this point, if the user goes to his or her profile page, the url added should be displayed.
+  !["Screenshot of user profile after new url added"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_newUrlAddedShow.png)
