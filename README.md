@@ -43,3 +43,5 @@ This is a full stack web app built with Express and NodeJS that enables users to
   !["Screenshot of log in page"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_login.png)
   - If the user enters an e-mail that has not been registered, the following no user present error page will be displayed.
   !["Screenshot of no user present"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_noUser.png)
+  - If the password entered on the login page returns false when running bcrypt.compareSync with the stored hashed password generated at registering, the following wrong password page will be displayed
+  !["Screenshot of wrong password"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_wrongPassword.png)
