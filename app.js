@@ -55,7 +55,8 @@ function urlsForUser(id,db){
   urlsForThisUser = {};
   for(shortURL in urlDatabase){
     if(db[shortURL].userID === id){
-      urlsForThisUser[shortURL] = {url:urlDatabase[shortURL].url, userID:id};
+      //urlsForThisUser[shortURL] = {url:urlDatabase[shortURL].url, userID:id, datesModified: urlDatabase[shortURL].datesModified};
+      urlsForThisUser[shortURL] = urlDatabase[shortURL];
     }
   }
   return urlsForThisUser;
@@ -118,7 +119,10 @@ app.get("/urls/new", (req, res) => {
 */
 app.post("/urls/new", (req, res) => {
   const randomString = generateRandomString(randomStringLength);
+  let datesModified = new Array();
+  datesModified.push(Date());
   urlDatabase[randomString] = {url:req.body.longURL, userID:req.session['user_id']};
+  urlDatabase[randomString].datesModified = datesModified;
   res.redirect("http://localhost:8080/urls/" + randomString);
 });
 
@@ -219,6 +223,7 @@ app.post("/urls/:id/delete",(req,res)=>{
 */
 app.post("/urls/:id",(req,res)=>{
   urlDatabase[req.params.id].url = req.body.longURL;
+  urlDatabase[req.params.id].datesModified.push(Date());
   res.redirect("/urls");
 });
 

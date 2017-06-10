@@ -17,6 +17,8 @@
       <input type="submit" value="Update" margin: 8px style="margin:5px;">
     </form>
     </li>
+    <p>Date created: <%= urls[key].datesModified[0]%></p>
+    <p>Date last modified: <%= urls[key].datesModified[urls[key].datesModified.length-1]%></p>
   <%});%>
 </ul>
 <% include ../partials/_footer %>
