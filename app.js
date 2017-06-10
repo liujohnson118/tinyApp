@@ -68,7 +68,8 @@ function urlsForUser(id,db){
 * or deleting. If logged in, the user may update/delete individual urls in the HOME page
 */
 app.get("/", (req, res) => {
-  if(req.session.user_id !== undefined){
+  let user=users[req.session.user_id]
+  if(user){
     res.redirect("/urls");
   }else{
     res.redirect("/login");
@@ -103,9 +104,8 @@ app.get("/u/:shortURL", (req, res) => {
 * If not logged in, the user will be redirected to the login page
 */
 app.get("/urls/new", (req, res) => {
-  var user = {};
-  if(req.session['user_id'] !== undefined){
-    user = users[req.session['user_id']];
+  let user=users[req.session.user_id];
+  if(user){
     res.render("pages/urls_new",{user:user});
   }else{
     res.status(403).send("Error: Please log in first before you can add a new url");
@@ -242,7 +242,6 @@ app.post("/login",(req, res)=>{
     if(user.email === req.body.useremail){
       if(bcrypt.compareSync(req.body.userpassword, user.password)){
         req.session.user_id = userID;
-        console.log("Encrpted user ID is: " + req.session.user_id);
         res.redirect('/urls');
         return;
       }else{
