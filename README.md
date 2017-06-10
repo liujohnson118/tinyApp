@@ -36,3 +36,10 @@ This is a full stack web app built with Express and NodeJS that enables users to
   !["Screenshot of /urls example when logged in"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_newUrlAddedShow.png)
   - If no user logged in and "Your Profile" button is clicked then the following error page will be displayed.
   !["Screenshot of error accessing user profile when not logged in"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_errorSeeingProfile.png)
+
+## Log In page
+
+  - In the header, the log in page can be accessed by clicking the `Log In` button and the following page will be displayed.
+  !["Screenshot of log in page"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_login.png)
+  - If the user enters an e-mail that has not been registered, the following no user present error page will be displayed.
+  !["Screenshot of no user present"](https://github.com/liujohnson118/tinyApp/blob/master/docs/tinyApp_noUser.png)
